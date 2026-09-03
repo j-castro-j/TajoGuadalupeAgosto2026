@@ -6,49 +6,45 @@
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <style>
-    html, body, #cesiumContainer { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; }
+    html, body, #cesiumContainer { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #1a1a1a; }
   </style>
 </head>
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    // 1. TU TOKEN DE CESIUM ION (entre las comillas simples)
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjlnWjh5WnZVbTRSZ2s5eGUiLCJqdGkiOiI0NzQyZDU1ZS1lNzcwLTQ1OTEtYmVkMS1hYWFkYzJjNTRjYzYiLCJpZCI6NDc3MzE0LCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3ODgxOTYzMzR9.d7HeXTwGpKuVONPPBcghXZlISjckj1wtQnxBnAMTi9M';
 
     const viewer = new Cesium.Viewer('cesiumContainer', {
-      terrain: Cesium.Terrain.fromWorldTerrain(),
+      // 1. Desactivamos elementos innecesarios
       timeline: false,
       animation: false,
-      baseLayerPicker: true
+      baseLayerPicker: false,
+      geocoder: false,
+      homeButton: false,
+      sceneModePicker: false,
+      navigationHelpButton: false
     });
 
-    // 2. TU NUEVO ASSET ID (solo el número, sin comillas)
+    // 2. OCULTAR EL GLOBO TERRÁQUEO Y LA ATMÓSFERA
+    viewer.scene.globe.show = false;
+    viewer.scene.skyAtmosphere.show = false;
+    viewer.scene.skyBox.show = false;
+    viewer.scene.sun.show = false;
+    viewer.scene.moon.show = false;
+
+    // 3. Fondo neutro oscuro (estilo visor 3D profesional)
+    viewer.scene.backgroundColor = Cesium.Color.fromCssColorString('#1e1e1e');
+
+    // 4. Cargar la malla en alta definición
     Cesium.Cesium3DTileset.fromIonAssetId(5175694, {
       maximumScreenSpaceError: 2
     }).then(function(tileset) {
       viewer.scene.primitives.add(tileset);
 
-      // -------------------------------------------------------------
-      // 3. AJUSTE DE ALTURA EN METROS
-      // Si el modelo flota en el aire: pon un valor negativo (ej: -25)
-      // Si el modelo quedó bajo tierra: pon un valor positivo (ej: 25)
-      // Si la altura quedó perfecta: déjalo en 0
-      // -------------------------------------------------------------
-      const ajusteMetros = 100; 
-
-      if (ajusteMetros !== 0) {
-        const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
-        const surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
-        const offset = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, ajusteMetros);
-        const translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
-        tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-      }
-
-      // Cámara inicial
+      // Cámara inicial con perspectiva oblicua
       const heading = Cesium.Math.toRadians(45);
       const pitch = Cesium.Math.toRadians(-35);
       viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(heading, pitch, 0));
-
     }).catch(function(error) {
       console.log('Error al cargar el modelo:', error);
     });
