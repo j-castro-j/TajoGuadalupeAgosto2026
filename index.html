@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Visor 3D - Tajo Guadalupe</title>
+  <title>Visor Topográfico 3D</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <style>
@@ -43,7 +43,7 @@
     .coords-row { display: flex; gap: 16px; }
     .coord-item span { color: #7ee787; font-weight: bold; }
 
-    /* Escala gráfica ampliada a 200px */
+    /* Escala gráfica ampliada (200px) */
     .scale-card {
       position: absolute; bottom: 20px; right: 16px; z-index: 10;
       background: rgba(18, 21, 25, 0.90); backdrop-filter: blur(8px);
@@ -70,7 +70,7 @@
 
   <!-- Barra superior -->
   <div class="top-bar">
-    <h1 id="projectTitle">TAJO BERMEJAL</h1>
+    <h1 id="projectTitle">CARGANDO...</h1>
     <button class="nav-btn" onclick="topView()">Planta (2D)</button>
     <button class="nav-btn" onclick="perspectiveView()">Perspectiva 3D</button>
     <button class="nav-btn" id="measureBtn" onclick="toggleMeasure()">📏 Medir 3D</button>
@@ -105,8 +105,20 @@
   <div id="cesiumContainer"></div>
 
   <script>
-    // 1. CREDENCIALES (Reemplaza con tus datos reales)
-    Cesium.Ion.defaultAccessToken = 'PEGA_AQUI_TU_TOKEN';
+    // =========================================================================
+    // PARÁMETROS CONFIGURABLES (SOLO EDITA ESTAS LÍNEAS EN CADA PROYECTO)
+    // =========================================================================
+    const NOMBRE_OBRA   = "TAJO GUADALUPE AGOSTO 2026";          // Cambia aquí el título para pestaña y pantalla
+    const CESIUM_TOKEN  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjlnWjh5WnZVbTRSZ2s5eGUiLCJqdGkiOiI0NzQyZDU1ZS1lNzcwLTQ1OTEtYmVkMS1hYWFkYzJjNTRjYzYiLCJpZCI6NDc3MzE0LCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3ODgxOTYzMzR9.d7HeXTwGpKuVONPPBcghXZlISjckj1wtQnxBnAMTi9M";      // Pega tu token entre las comillas
+    const ASSET_ID_MALLA = 5175694;                  // Pon aquí el Asset ID de Guadalupe (solo números)
+    // =========================================================================
+
+    // Sincronización automática de nombres
+    document.title = "Visor 3D - " + NOMBRE_OBRA;
+    document.getElementById('projectTitle').innerText = NOMBRE_OBRA;
+
+    // 1. CREDENCIALES
+    Cesium.Ion.defaultAccessToken = CESIUM_TOKEN;
 
     const viewer = new Cesium.Viewer('cesiumContainer', {
       timeline: false,
@@ -120,7 +132,7 @@
       selectionIndicator: false
     });
 
-    // 2. AISLAMIENTO DEL MODELO
+    // 2. MODELO AISLADO
     viewer.scene.globe.show = false;
     if (viewer.scene.skyAtmosphere) viewer.scene.skyAtmosphere.show = false;
     if (viewer.scene.skyBox) viewer.scene.skyBox.show = false;
@@ -130,8 +142,8 @@
 
     let currentTileset = null;
 
-    // 3. CARGA DEL 3D TILESET
-    Cesium.Cesium3DTileset.fromIonAssetId(TU_ASSET_ID_NUMERO, {
+    // 3. CARGA DE LA MALLA
+    Cesium.Cesium3DTileset.fromIonAssetId(ASSET_ID_MALLA, {
       maximumScreenSpaceError: 2
     }).then(function(tileset) {
       currentTileset = tileset;
@@ -184,13 +196,12 @@
     }
     viewer.camera.changed.addEventListener(updateScaleBar);
 
-    // 7. SISTEMA DE MEDICIÓN 3D CORREGIDO
+    // 7. MEDICIÓN 3D
     let isMeasuring = false;
     let measurePoints = [];
     let measureEntities = [];
     const measureHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
-    // Limpia entidades visuales de medición sin apagar el modo
     function resetGraphicsOnly() {
       measurePoints = [];
       measureEntities.forEach(e => viewer.entities.remove(e));
@@ -229,7 +240,6 @@
 
       measurePoints.push(pickedPosition);
 
-      // Punto con disableDepthTestDistance para garantizar visibilidad sobre la roca
       const pointEntity = viewer.entities.add({
         position: pickedPosition,
         point: {
@@ -250,7 +260,6 @@
         const p1 = measurePoints[0];
         const p2 = measurePoints[1];
 
-        // Línea recta euclidiana (sin curvatura)
         const lineEntity = viewer.entities.add({
           polyline: {
             positions: [p1, p2],
@@ -262,7 +271,6 @@
         });
         measureEntities.push(lineEntity);
 
-        // Geometría y cálculo de desniveles
         const c1 = Cesium.Cartographic.fromCartesian(p1);
         const c2 = Cesium.Cartographic.fromCartesian(p2);
 
@@ -271,7 +279,6 @@
         const distH = Math.sqrt(Math.max(0, Math.pow(dist3D, 2) - Math.pow(deltaZ, 2)));
         const slope = distH > 0 ? (Math.abs(deltaZ) / distH) * 100 : 0;
 
-        // Renderizado en el panel
         document.getElementById('mDist3D').innerText = dist3D.toFixed(2) + ' m';
         document.getElementById('mDistH').innerText = distH.toFixed(2) + ' m';
         document.getElementById('mDeltaZ').innerText = (deltaZ >= 0 ? '+' : '') + deltaZ.toFixed(2) + ' m';
