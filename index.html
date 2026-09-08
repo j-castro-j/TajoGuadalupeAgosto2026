@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tajo Guadalupe Agosto</title>
+  <title>Visor 3D - Tajo Guadalupe</title>
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <style>
@@ -10,10 +10,10 @@
       width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #121519; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* Barra superior ejecutiva */
+    /* Barra superior */
     .top-bar {
       position: absolute; top: 16px; left: 16px; z-index: 10;
-      background: rgba(18, 21, 25, 0.88); backdrop-filter: blur(8px);
+      background: rgba(18, 21, 25, 0.90); backdrop-filter: blur(8px);
       padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.12);
       color: #f0f3f6; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
@@ -27,7 +27,7 @@
     .nav-btn:hover { background: #1f6feb; border-color: #58a6ff; }
     .nav-btn.active { background: #238636; border-color: #2ea043; color: #fff; }
 
-    /* Panel de Coordenadas con Nota de Sistema Local */
+    /* Coordenadas en tiempo real */
     .coords-card {
       position: absolute; bottom: 20px; left: 16px; z-index: 10;
       background: rgba(18, 21, 25, 0.90); backdrop-filter: blur(8px);
@@ -40,15 +40,13 @@
       color: #58a6ff; background: rgba(88, 166, 255, 0.12); border: 1px solid rgba(88, 166, 255, 0.25);
       padding: 2px 6px; border-radius: 3px; align-self: flex-start;
     }
-    .coords-row {
-      display: flex; gap: 16px;
-    }
+    .coords-row { display: flex; gap: 16px; }
     .coord-item span { color: #7ee787; font-weight: bold; }
 
-    /* Escala gráfica (200px) */
+    /* Escala gráfica ampliada a 200px */
     .scale-card {
       position: absolute; bottom: 20px; right: 16px; z-index: 10;
-      background: rgba(18, 21, 25, 0.88); backdrop-filter: blur(8px);
+      background: rgba(18, 21, 25, 0.90); backdrop-filter: blur(8px);
       padding: 8px 16px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.12);
       color: #f0f3f6; font-size: 13px; font-weight: 600; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
@@ -56,12 +54,12 @@
       height: 6px; border: 2px solid #58a6ff; border-top: none; margin: 6px auto 2px auto;
     }
 
-    /* Panel de medición 3D */
+    /* Panel de resultados de medición */
     .measure-panel {
       position: absolute; top: 72px; left: 16px; z-index: 10;
-      background: rgba(18, 21, 25, 0.92); backdrop-filter: blur(8px);
+      background: rgba(18, 21, 25, 0.95); backdrop-filter: blur(8px);
       padding: 12px 16px; border-radius: 8px; border: 1px solid #58a6ff;
-      color: #e6edf3; font-size: 12px; display: none; min-width: 210px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      color: #e6edf3; font-size: 12px; display: none; min-width: 220px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
     }
     .measure-panel h2 { margin: 0 0 8px 0; font-size: 13px; color: #58a6ff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
     .measure-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
@@ -88,7 +86,7 @@
     <div class="measure-row"><span>Pendiente:</span><span class="measure-val" id="mSlope">-- %</span></div>
   </div>
 
-  <!-- Coordenadas con distintivo de Sistema Local -->
+  <!-- Coordenadas dinámicas -->
   <div class="coords-card">
     <div class="system-tag">Sistema Local de Mina</div>
     <div class="coords-row">
@@ -98,7 +96,7 @@
     </div>
   </div>
 
-  <!-- Escala gráfica ampliada -->
+  <!-- Escala gráfica -->
   <div class="scale-card">
     <div id="scaleText">-- m</div>
     <div id="scaleBar" class="scale-line" style="width: 200px;"></div>
@@ -107,8 +105,8 @@
   <div id="cesiumContainer"></div>
 
   <script>
-    // 1. CREDENCIALES
-    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjlnWjh5WnZVbTRSZ2s5eGUiLCJqdGkiOiI0NzQyZDU1ZS1lNzcwLTQ1OTEtYmVkMS1hYWFkYzJjNTRjYzYiLCJpZCI6NDc3MzE0LCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoidW5kZWZpbmVkX2RlZmF1bHQiLCJpYXQiOjE3ODgxOTYzMzR9.d7HeXTwGpKuVONPPBcghXZlISjckj1wtQnxBnAMTi9M';
+    // 1. CREDENCIALES (Reemplaza con tus datos reales)
+    Cesium.Ion.defaultAccessToken = 'PEGA_AQUI_TU_TOKEN';
 
     const viewer = new Cesium.Viewer('cesiumContainer', {
       timeline: false,
@@ -122,7 +120,7 @@
       selectionIndicator: false
     });
 
-    // 2. FONDO Y MODELO AISLADO
+    // 2. AISLAMIENTO DEL MODELO
     viewer.scene.globe.show = false;
     if (viewer.scene.skyAtmosphere) viewer.scene.skyAtmosphere.show = false;
     if (viewer.scene.skyBox) viewer.scene.skyBox.show = false;
@@ -132,8 +130,8 @@
 
     let currentTileset = null;
 
-    // 3. CARGA DE LA MALLA
-    Cesium.Cesium3DTileset.fromIonAssetId(5175694, {
+    // 3. CARGA DEL 3D TILESET
+    Cesium.Cesium3DTileset.fromIonAssetId(TU_ASSET_ID_NUMERO, {
       maximumScreenSpaceError: 2
     }).then(function(tileset) {
       currentTileset = tileset;
@@ -154,7 +152,7 @@
       viewer.zoomTo(currentTileset, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(45), Cesium.Math.toRadians(-35), 0));
     }
 
-    // 5. INSPECCIÓN DE COORDENADAS BAJO EL CURSOR
+    // 5. INSPECCIÓN DE COORDENADAS
     const coordsHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     coordsHandler.setInputAction(function(movement) {
       const pickedPosition = viewer.scene.pickPosition(movement.endPosition);
@@ -166,7 +164,7 @@
       }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    // 6. ESCALA GRÁFICA DINÁMICA (200 PÍXELES)
+    // 6. ESCALA GRÁFICA (200px)
     function updateScaleBar() {
       const width = 200;
       const center = new Cesium.Cartesian2(viewer.canvas.clientWidth / 2, viewer.canvas.clientHeight / 2);
@@ -186,11 +184,22 @@
     }
     viewer.camera.changed.addEventListener(updateScaleBar);
 
-    // 7. MEDICIÓN 3D
+    // 7. SISTEMA DE MEDICIÓN 3D CORREGIDO
     let isMeasuring = false;
     let measurePoints = [];
     let measureEntities = [];
     const measureHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+    // Limpia entidades visuales de medición sin apagar el modo
+    function resetGraphicsOnly() {
+      measurePoints = [];
+      measureEntities.forEach(e => viewer.entities.remove(e));
+      measureEntities = [];
+      document.getElementById('mDist3D').innerText = '-- m';
+      document.getElementById('mDistH').innerText = '-- m';
+      document.getElementById('mDeltaZ').innerText = '-- m';
+      document.getElementById('mSlope').innerText = '-- %';
+    }
 
     function toggleMeasure() {
       isMeasuring = !isMeasuring;
@@ -199,14 +208,16 @@
       const clearBtn = document.getElementById('clearBtn');
 
       if (isMeasuring) {
+        resetGraphicsOnly();
         btn.classList.add('active');
-        btn.innerText = 'Haga clic en P1';
+        btn.innerText = 'P1: Clic en el terreno';
         panel.style.display = 'block';
         clearBtn.style.display = 'inline-block';
-        clearMeasure();
+        viewer.canvas.style.cursor = 'crosshair';
       } else {
         btn.classList.remove('active');
         btn.innerText = '📏 Medir 3D';
+        viewer.canvas.style.cursor = 'default';
       }
     }
 
@@ -218,30 +229,40 @@
 
       measurePoints.push(pickedPosition);
 
+      // Punto con disableDepthTestDistance para garantizar visibilidad sobre la roca
       const pointEntity = viewer.entities.add({
         position: pickedPosition,
-        point: { pixelSize: 8, color: Cesium.Color.fromCssColorString('#58a6ff'), outlineColor: Cesium.Color.WHITE, outlineWidth: 2 }
+        point: {
+          pixelSize: 10,
+          color: Cesium.Color.fromCssColorString('#00f0ff'),
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
+        }
       });
       measureEntities.push(pointEntity);
 
       const btn = document.getElementById('measureBtn');
 
       if (measurePoints.length === 1) {
-        btn.innerText = 'Haga clic en P2';
+        btn.innerText = 'P2: Clic en el terreno';
       } else if (measurePoints.length === 2) {
         const p1 = measurePoints[0];
         const p2 = measurePoints[1];
 
+        // Línea recta euclidiana (sin curvatura)
         const lineEntity = viewer.entities.add({
           polyline: {
             positions: [p1, p2],
-            width: 3,
+            width: 4,
             material: Cesium.Color.fromCssColorString('#7ee787'),
-            depthFailMaterial: Cesium.Color.fromCssColorString('#7ee787')
+            depthFailMaterial: Cesium.Color.fromCssColorString('#7ee787'),
+            arcType: Cesium.ArcType.NONE
           }
         });
         measureEntities.push(lineEntity);
 
+        // Geometría y cálculo de desniveles
         const c1 = Cesium.Cartographic.fromCartesian(p1);
         const c2 = Cesium.Cartographic.fromCartesian(p2);
 
@@ -250,30 +271,27 @@
         const distH = Math.sqrt(Math.max(0, Math.pow(dist3D, 2) - Math.pow(deltaZ, 2)));
         const slope = distH > 0 ? (Math.abs(deltaZ) / distH) * 100 : 0;
 
+        // Renderizado en el panel
         document.getElementById('mDist3D').innerText = dist3D.toFixed(2) + ' m';
         document.getElementById('mDistH').innerText = distH.toFixed(2) + ' m';
         document.getElementById('mDeltaZ').innerText = (deltaZ >= 0 ? '+' : '') + deltaZ.toFixed(2) + ' m';
         document.getElementById('mSlope').innerText = slope.toFixed(1) + ' %';
 
-        btn.innerText = 'Medición Lista';
-        isMeasuring = false;
+        btn.innerText = '📏 Medir de nuevo';
         btn.classList.remove('active');
+        viewer.canvas.style.cursor = 'default';
+        isMeasuring = false;
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
     function clearMeasure() {
-      measurePoints = [];
-      measureEntities.forEach(e => viewer.entities.remove(e));
-      measureEntities = [];
-      document.getElementById('mDist3D').innerText = '-- m';
-      document.getElementById('mDistH').innerText = '-- m';
-      document.getElementById('mDeltaZ').innerText = '-- m';
-      document.getElementById('mSlope').innerText = '-- %';
+      resetGraphicsOnly();
       document.getElementById('measurePanel').style.display = 'none';
       document.getElementById('clearBtn').style.display = 'none';
       const btn = document.getElementById('measureBtn');
       btn.innerText = '📏 Medir 3D';
       btn.classList.remove('active');
+      viewer.canvas.style.cursor = 'default';
       isMeasuring = false;
     }
   </script>
